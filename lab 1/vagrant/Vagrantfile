@@ -1,0 +1,79 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.require_version ">= 1.6"
+
+boxes = [
+	{ name: "WEB1",
+	  box: "ubuntu/impish64",
+	  ram: "1024",
+	  cpus: "2",
+	  guesttype: "ubuntu",
+		nics: [
+			{
+				type: "hostonly"
+			}
+		#	{
+		#		type: "internal", # bridged or internal
+		#		name: "intsec_dmz", # enter bridge interface or internal network name
+		#		ip: "10.50.2.2", # EDIT THIS
+		#		netmask: "255.255.255.0"
+		#	}
+		]
+	}
+]
+
+Vagrant.configure("2") do |config|
+	boxes.each do |machine|
+		config.vm.define machine[:name] do |srv|
+
+			srv.vm.box = machine[:box]
+			srv.vm.host_name = machine[:name]
+			srv.vm.guest = machine[:guesttype]
+			srv.vm.boot_timeout = 600
+
+			if defined? machine[:box_url]
+				srv.vm.box_url = machine[:box_url]
+				srv.vm.box_download_insecure = true
+			end
+
+			# WINDOWS SPECIFIC CONFIGURATION
+			if machine[:guesttype] == "windows"
+		 		srv.vm.communicator = "winrm"
+				srv.winrm.transport = :plaintext
+				srv.winrm.basic_auth_only = true
+
+	 			srv.winrm.username = "vagrant"
+				srv.winrm.password = "vagrant"
+				srv.windows.halt_timeout = 15
+
+			end
+
+			# NETWORK CONFIGURATION
+			machine[:nics].each do |nic|
+				if nic[:type] == "hostonly"
+					srv.vm.network "private_network", type: "dhcp"
+				end
+				if nic[:type] == "internal"
+					srv.vm.network "private_network", virtualbox__intnet: nic[:name], ip: nic[:ip], netmask: nic[:netmask]
+				end
+				if nic[:type] == "bridged"
+					srv.vm.network "public_network", bridge: nic[:name], ip: nic[:ip], netmask: nic[:netmask]
+				end
+			end
+
+			srv.vm.provision "ansible_local" do |ansible|
+				ansible.playbook = "ansible/default.yml"
+			end
+
+			# VIRTUALBOX CONFIGURATION
+			srv.vm.provider :virtualbox do |v|
+				v.gui = true
+				v.name = machine[:name]
+				v.memory = machine[:ram]
+				v.cpus = machine[:cpus]
+				v.customize ["setextradata", "global", "GUI/SuppressMessages", "all" ]
+			end
+		end
+	end
+end
