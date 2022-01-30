@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+  #- name: install packages
+  #  yum: pkg={{item}} state=latest
+  #  with_items:
+  #    - iptables
+  #    - iptables-services
+  #    - iptables-utils
+  #- debug: var=ansible_all_ipv4_addresses
+  - debug: var=ansible_enp0s8.ipv4.address
