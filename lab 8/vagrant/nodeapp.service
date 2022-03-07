@@ -1,0 +1,13 @@
+[Unit]
+Description=Node Applcation
+After=network.target
+
+[Service]
+Type=simple
+User=vagrant
+ExecStart=/usr/bin/node /opt/node_app/app.js serve
+WorkingDirectory=/opt/node_app/
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
