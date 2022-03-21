@@ -1,12 +1,12 @@
 [Unit]
-Description=Node Applcation
+Description=Node Application
 After=network.target
 
 [Service]
-Type=simple
+Type=forking
 User=vagrant
-ExecStart=/usr/bin/node /opt/node_app/app.js serve
-WorkingDirectory=/opt/node_app/
+ExecStart=/usr/bin/node /usr/bin/ghost start
+WorkingDirectory=/opt/ghost/
 Restart=on-failure
 
 [Install]

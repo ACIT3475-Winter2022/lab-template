@@ -23,9 +23,18 @@
       name: nodejs
       state: present
 
-  - name: copy node app
-    copy: 
-      src: ../node_app
+#  - name: copy node app
+#    copy: 
+#      src: ../node_app
+#      dest: /opt/
+  - name: Install ghost-cli npm package
+    npm:
+      name: ghost-cli
+      global: true
+
+  - name: Extract ghost.tar.gz
+    unarchive:
+      src: ../ghost.tar.gz
       dest: /opt/
 
   - name: copy node app service file
@@ -37,7 +46,8 @@
     service:
       name=nodeapp
       enabled=yes
-      state=started
+      state=restarted
+      daemon_reload=yes
 
   - name: Install nodejs package
     npm:

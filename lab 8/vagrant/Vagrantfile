@@ -40,7 +40,7 @@ boxes = [
 	},
 	{ name: "APP2",
 	  box: "ubuntu/impish64",
-	  ram: "768",
+	  ram: "1024",
 	  cpus: "1",
 	  guesttype: "ubuntu",
 		nics: [
@@ -57,7 +57,7 @@ boxes = [
 	},
 	{ name: "APP3",
 	  box: "ubuntu/impish64",
-	  ram: "768",
+	  ram: "1024",
 	  cpus: "1",
 	  guesttype: "ubuntu",
 		nics: [
